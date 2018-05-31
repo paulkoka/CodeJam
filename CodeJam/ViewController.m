@@ -101,7 +101,7 @@
         if ([obj isKindOfClass:[NSString class]]) {
             [newLoader downloadImage:[NSURL URLWithString:obj] withCompletion:^(UIImage * image) {
                 UIImageView* newImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
-                newImageView.frame = CGRectMake(0, overallHeight * self.i / urls.count, overallWidth, overallHeight / urls.count );
+                newImageView.frame = CGRectMake(0, overallHeight * self.i / urls.count / 1.8 + 20, overallWidth, overallHeight / urls.count / 2.5);
                 newImageView.contentMode = UIViewContentModeScaleAspectFit;
                 NSLog(@"%@", obj);
                 
@@ -115,9 +115,11 @@
                 dispatch_group_async(group,dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
                 
                 [self downloadFromURLS:obj loader:newLoader];
-                    NSLog(@"Group loaded");
+                    NSLog(@"Group started");
                 });
+                
                   dispatch_release(group);
+                NSLog(@"Group released");
             }
         }
     }
