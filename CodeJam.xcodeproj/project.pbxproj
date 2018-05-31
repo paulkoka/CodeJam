@@ -13,6 +13,8 @@
 		DA5D4D2820C04D12007315E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA5D4D2720C04D12007315E6 /* Assets.xcassets */; };
 		DA5D4D2B20C04D12007315E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA5D4D2920C04D12007315E6 /* LaunchScreen.storyboard */; };
 		DA5D4D2E20C04D12007315E6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5D4D2D20C04D12007315E6 /* main.m */; };
+		DA5D4D3920C05CB3007315E6 /* KPILoader.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5D4D3820C05CB3007315E6 /* KPILoader.m */; };
+		DA5D4D3D20C06592007315E6 /* KPIURLList.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5D4D3C20C06592007315E6 /* KPIURLList.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,10 @@
 		DA5D4D2A20C04D12007315E6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DA5D4D2C20C04D12007315E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA5D4D2D20C04D12007315E6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DA5D4D3720C05CB3007315E6 /* KPILoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KPILoader.h; sourceTree = "<group>"; };
+		DA5D4D3820C05CB3007315E6 /* KPILoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KPILoader.m; sourceTree = "<group>"; };
+		DA5D4D3B20C06592007315E6 /* KPIURLList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KPIURLList.h; sourceTree = "<group>"; };
+		DA5D4D3C20C06592007315E6 /* KPIURLList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KPIURLList.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +66,9 @@
 			children = (
 				DA5D4D1E20C04D10007315E6 /* AppDelegate.h */,
 				DA5D4D1F20C04D10007315E6 /* AppDelegate.m */,
-				DA5D4D2120C04D10007315E6 /* ViewController.h */,
+				DA5D4D3A20C0640F007315E6 /* customClasses */,
 				DA5D4D2220C04D10007315E6 /* ViewController.m */,
+				DA5D4D2120C04D10007315E6 /* ViewController.h */,
 				DA5D4D2420C04D10007315E6 /* Main.storyboard */,
 				DA5D4D2720C04D12007315E6 /* Assets.xcassets */,
 				DA5D4D2920C04D12007315E6 /* LaunchScreen.storyboard */,
@@ -69,6 +76,17 @@
 				DA5D4D2D20C04D12007315E6 /* main.m */,
 			);
 			path = CodeJam;
+			sourceTree = "<group>";
+		};
+		DA5D4D3A20C0640F007315E6 /* customClasses */ = {
+			isa = PBXGroup;
+			children = (
+				DA5D4D3720C05CB3007315E6 /* KPILoader.h */,
+				DA5D4D3820C05CB3007315E6 /* KPILoader.m */,
+				DA5D4D3B20C06592007315E6 /* KPIURLList.h */,
+				DA5D4D3C20C06592007315E6 /* KPIURLList.m */,
+			);
+			name = customClasses;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,6 +160,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA5D4D2320C04D10007315E6 /* ViewController.m in Sources */,
+				DA5D4D3D20C06592007315E6 /* KPIURLList.m in Sources */,
+				DA5D4D3920C05CB3007315E6 /* KPILoader.m in Sources */,
 				DA5D4D2E20C04D12007315E6 /* main.m in Sources */,
 				DA5D4D2020C04D10007315E6 /* AppDelegate.m in Sources */,
 			);
@@ -178,7 +198,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -236,7 +256,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
