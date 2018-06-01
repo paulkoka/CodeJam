@@ -51,11 +51,15 @@
     } else{
         
         if ([button isEqual:self.refrashButton] && self.i) {
-//            double delayInSeconds = 3.0;
+//            double delayInSeconds = 1.0;
 //            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
 //            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                self.refrashButton.enabled = NO;
-          //  });
+
+ //           });
+            
+            _refrashButton.enabled = NO;
+            NSLog(@"self.refrashButton.enabled = NO");
+            
             [self removeUIImageViewFromSelfView];
             [self exacuteButtonTap];
         }}
@@ -93,7 +97,6 @@
     
     for (id obj in urls) {
         if ([obj isKindOfClass:[NSString class]]) {
-            NSLog(@"%@", obj);
             [newLoader downloadImage:[NSURL URLWithString:obj]
                       withCompletion:^(UIImage * image) {
                           [self layoutDouwnloadedSinglePictures:image];
@@ -153,13 +156,23 @@
         }
         
         [self.view addSubview:self.gropeOfPictures];
-        [self.gropeOfPictures setNeedsDisplay];
+
         NSLog(@"all done");
+//////////////////////////////////////////////////////////////////////////////////////////////
         
+        _refrashButton.enabled = YES;
+         NSLog(@"self.refrashButton.enabled = YES");
+        [self.gropeOfPictures setNeedsDisplay];
+        [self.gropeOfPictures setNeedsLayout];
+        [self.gropeOfPictures layoutIfNeeded];
+        NSLog(@"self.view layoutIfNeeded");
+//////////////////////////////////////////////////////////////////////////////////////////////
         });
+
+
     
     dispatch_release(group);
-    self.refrashButton.enabled = YES;
+   
     [images release];
     }
 
