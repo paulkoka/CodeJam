@@ -14,6 +14,7 @@
 
 @property (nonatomic, retain) UIButton* downloadButton;
 @property (nonatomic, retain) UIButton* refrashButton;
+@property (nonatomic, retain) UIView* gropeOfPictures;
 
 @property (atomic, assign) NSUInteger i;
 
@@ -25,6 +26,8 @@
     
     [super viewWillAppear:YES];
     self.view.backgroundColor = [UIColor whiteColor];
+    self.gropeOfPictures = [[[UIView alloc] init] autorelease];
+
 
 
 }
@@ -85,45 +88,94 @@
     [self downloadFromURLS:urls loader:newLoader];
 }
 
+
+
 - (void) downloadFromURLS: (NSArray*) urls loader:(KPILoader*) newLoader {
+ 
     
-    
-    
+//////////////////////////////////////dosomething with this later!!!!!
     __block NSUInteger overallWidth = 0;
     __block NSUInteger overallHeight = 0;
+    
+    __block CGRect rect = CGRectMake(0, overallHeight * self.i / urls.count / 1.8 + 20, overallWidth, overallHeight / urls.count / 2.5);
     
     dispatch_async(dispatch_get_main_queue(), ^{
     overallWidth = self.view.frame.size.width;
     overallHeight = self.view.frame.size.height;
     });
-
+//////////////////////////////////////end//////////////////////////
+    
+    
     for (id obj in urls) {
         if ([obj isKindOfClass:[NSString class]]) {
-            [newLoader downloadImage:[NSURL URLWithString:obj] withCompletion:^(UIImage * image) {
-                UIImageView* newImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
-                newImageView.frame = CGRectMake(0, overallHeight * self.i / urls.count / 1.8 + 20, overallWidth, overallHeight / urls.count / 2.5);
-                newImageView.contentMode = UIViewContentModeScaleAspectFit;
-                NSLog(@"%@", obj);
+            NSLog(@"%@", obj);
+            [newLoader downloadImage:[NSURL URLWithString:obj]
+            withCompletion:^(UIImage * image) {
+                rect = CGRectMake(0, overallHeight * self.i / urls.count / 1.8 + 20, overallWidth, overallHeight / urls.count / 2.5);
+                [self layoutDouwnloadedSinglePictures:image rect:rect];
                 
-                [self.view addSubview:newImageView];
-                self.i++;
-            }];
-        } else {
+            }];   } else {
+                
             if ([obj isKindOfClass:[NSArray class]]) {
+                self.gropeOfPictures.frame = rect;
+                
+                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+                
                 dispatch_group_t group = dispatch_group_create();
                 
-                dispatch_group_async(group,dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
+                dispatch_group_async(group, queue, ^ {
                 
-                [self downloadFromURLS:obj loader:newLoader];
+                //[self downloadFromURLS:obj loader:newLoader];
+                    [self layoutDouwnloadedGroupOfPictures:obj loader:newLoader rect:rect];
+                    
                     NSLog(@"Group started");
+                    
+                    
                 });
                 
+                dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+                    NSLog(@"All finished!");
+                    
+//                    [images enumerateObjectsUsingBlock:^(UIImage * _Nonnull image, NSUInteger idx, BOOL * _Nonnull stop) {
+//                        self.imageViewArray[idx].image = image;
+                });
+
                   dispatch_release(group);
                 NSLog(@"Group released");
             }
         }
     }
   
+}
+
+-(void) layoutDouwnloadedSinglePictures:(UIImage*)image rect:(CGRect)rect{
+    UIImageView* newImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
+    ////integer and double devision!!! but works fix later
+    
+    newImageView.frame = rect;
+    newImageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.view addSubview:newImageView];
+    self.i++;
+    
+}
+
+
+-(void) layoutDouwnloadedGroupOfPictures: (NSArray*) urls loader:(KPILoader*) newLoader rect:(CGRect)rect{
+    self.i++;
+    
+    
+    for (NSString* obj in urls) {
+        NSLog(@"%@", obj);
+                 [newLoader downloadImage:[NSURL URLWithString:obj]
+                      withCompletion:^(UIImage * image) {
+                          UIImageView* newImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
+                          newImageView.contentMode = UIViewContentModeScaleAspectFit;
+                          NSLog(@"TRY add@");
+                          [self.gropeOfPictures addSubview:newImageView];
+                          NSLog(@"ADDED@");
+                      }];
+    
+    }
 }
 
 
