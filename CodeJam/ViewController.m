@@ -15,6 +15,7 @@
 @property (nonatomic, retain) UIButton* downloadButton;
 @property (nonatomic, retain) UIButton* refrashButton;
 @property (nonatomic, retain) UIView* gropeOfPictures;
+@property (nonatomic, assign) NSUInteger numberOfRows;
 
 @property (atomic, assign) NSUInteger i;
 
@@ -26,10 +27,7 @@
     
     [super viewWillAppear:YES];
     self.view.backgroundColor = [UIColor whiteColor];
-    self.gropeOfPictures = [[[UIView alloc] init] autorelease];
-
-
-
+  
 }
 
 -(void) viewWillLayoutSubviews{
@@ -45,34 +43,29 @@
     
 }
 
-//- (void) layoutViews:(NSArray*) urls{
-//    NSMutableArray* views  = [NSMutableArray array];
-//    CGRect rect = CGRectMake( 0 , 0 , self.view.frame.size.width, (self.view.frame.size.height - 30) / urls.count);
-//    for (id obj in urls) {
-//        UIView* temp = [[UIView alloc] initWithFrame:rect];
-//        [self.view addSubview:temp];
-//    }
-//}
-
-
 
 -(void) buttonTapped: (UIButton*) button{
     
     if ([button isEqual:self.downloadButton] && !self.i) {
         [self exacuteButtonTap];
     } else{
-    
-    if ([button isEqual:self.refrashButton] && self.i) {
-        [self removeUIImageViewFromSelfView];
-        [self exacuteButtonTap];
-    }}
+        
+        if ([button isEqual:self.refrashButton] && self.i) {
+            double delayInSeconds = 3.0;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                self.refrashButton.enabled = NO;
+            });
+            [self removeUIImageViewFromSelfView];
+            [self exacuteButtonTap];
+        }}
 }
 
 - (void)removeUIImageViewFromSelfView
 {
     for (id child in [self.view subviews])
     {
-        if ([child isMemberOfClass:[UIImageView class]])
+        if ([child isMemberOfClass:[UIImageView class]] || [child isMemberOfClass:[UIView class]] )
         {
             [child removeFromSuperview];
         }
@@ -84,75 +77,42 @@
     KPIURLList* newUrlList = [[[KPIURLList alloc]init]autorelease];
     
     NSArray*  urls = [NSArray arrayWithArray:[newUrlList uRLList]];
+    
+    self.numberOfRows = urls.count;
+    
     self.i = 0;
     [self downloadFromURLS:urls loader:newLoader];
 }
 
+-(CGRect) currentRectPlace{
+    return  CGRectMake(0, self.view.frame.size.height * self.i / self.numberOfRows / 1.8 + 20, self.view.frame.size.width, self.view.frame.size.height / self.numberOfRows / 2.5);
+}
 
 
 - (void) downloadFromURLS: (NSArray*) urls loader:(KPILoader*) newLoader {
- 
-    
-//////////////////////////////////////dosomething with this later!!!!!
-    __block NSUInteger overallWidth = 0;
-    __block NSUInteger overallHeight = 0;
-    
-    __block CGRect rect = CGRectMake(0, overallHeight * self.i / urls.count / 1.8 + 20, overallWidth, overallHeight / urls.count / 2.5);
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-    overallWidth = self.view.frame.size.width;
-    overallHeight = self.view.frame.size.height;
-    });
-//////////////////////////////////////end//////////////////////////
-    
     
     for (id obj in urls) {
         if ([obj isKindOfClass:[NSString class]]) {
             NSLog(@"%@", obj);
             [newLoader downloadImage:[NSURL URLWithString:obj]
-            withCompletion:^(UIImage * image) {
-                rect = CGRectMake(0, overallHeight * self.i / urls.count / 1.8 + 20, overallWidth, overallHeight / urls.count / 2.5);
-                [self layoutDouwnloadedSinglePictures:image rect:rect];
-                
-            }];   } else {
-                
-            if ([obj isKindOfClass:[NSArray class]]) {
-                self.gropeOfPictures.frame = rect;
-                
-                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-                
-                dispatch_group_t group = dispatch_group_create();
-                
-                dispatch_group_async(group, queue, ^ {
-                
-                //[self downloadFromURLS:obj loader:newLoader];
-                    [self layoutDouwnloadedGroupOfPictures:obj loader:newLoader rect:rect];
-                    
-                    NSLog(@"Group started");
-                    
-                    
-                });
-                
-                dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-                    NSLog(@"All finished!");
-                    
-//                    [images enumerateObjectsUsingBlock:^(UIImage * _Nonnull image, NSUInteger idx, BOOL * _Nonnull stop) {
-//                        self.imageViewArray[idx].image = image;
-                });
-
-                  dispatch_release(group);
-                NSLog(@"Group released");
+                      withCompletion:^(UIImage * image) {
+                          [self layoutDouwnloadedSinglePictures:image];
+                          
+                      }];   } else {
+                          
+                          if ([obj isKindOfClass:[NSArray class]]) {
+                               [self layoutDouwnloadedGroupOfPictures:obj loader:newLoader];
+                      }
             }
-        }
+    
     }
-  
+    
 }
 
--(void) layoutDouwnloadedSinglePictures:(UIImage*)image rect:(CGRect)rect{
+-(void) layoutDouwnloadedSinglePictures:(UIImage*)image{
     UIImageView* newImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
-    ////integer and double devision!!! but works fix later
     
-    newImageView.frame = rect;
+    newImageView.frame = [self currentRectPlace];
     newImageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:newImageView];
     self.i++;
@@ -160,23 +120,47 @@
 }
 
 
--(void) layoutDouwnloadedGroupOfPictures: (NSArray*) urls loader:(KPILoader*) newLoader rect:(CGRect)rect{
-    self.i++;
+-(void) layoutDouwnloadedGroupOfPictures: (NSArray*) urls loader:(KPILoader*) newLoader{
+    NSMutableArray* images = [[NSMutableArray alloc] init];
+    
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_group_t group = dispatch_group_create();
     
     
     for (NSString* obj in urls) {
-        NSLog(@"%@", obj);
-                 [newLoader downloadImage:[NSURL URLWithString:obj]
-                      withCompletion:^(UIImage * image) {
-                          UIImageView* newImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
-                          newImageView.contentMode = UIViewContentModeScaleAspectFit;
-                          NSLog(@"TRY add@");
-                          [self.gropeOfPictures addSubview:newImageView];
-                          NSLog(@"ADDED@");
-                      }];
-    
+        dispatch_group_async(group, queue, ^{
+            dispatch_group_enter(group);
+            [newLoader downloadImage:[NSURL URLWithString:obj] withCompletion:^(UIImage * image) {
+                UIImageView* newImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
+                 [images addObject:newImageView];
+                 dispatch_group_leave(group);
+            }];
+            
+        });
     }
-}
+    
+    
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        self.gropeOfPictures = [[[UIView alloc] initWithFrame:self.currentRectPlace] autorelease];
+       
+        self.i++;
+        
+        NSUInteger x = 0;
+        for (UIImageView* obj in images) {
+            obj.frame = CGRectMake(self.gropeOfPictures.frame.size.width * x / images.count + 50, 0, self.gropeOfPictures.frame.size.height , self.gropeOfPictures.frame.size.height);
+            x++;
+            [self.gropeOfPictures addSubview:obj];
+        }
+        
+        [self.view addSubview:self.gropeOfPictures];
+        [self.gropeOfPictures setNeedsDisplay];
+        NSLog(@"all done");
+        
+        });
+    
+    dispatch_release(group);
+    [images release];
+    }
 
 
 -(UIButton*) buttonSetStatesofTitle: (NSString*) title plaseRect:(CGRect) valueOfRect targetactionSelector:(SEL) selectorOfAction{
@@ -204,4 +188,3 @@
 
 
 @end
-
